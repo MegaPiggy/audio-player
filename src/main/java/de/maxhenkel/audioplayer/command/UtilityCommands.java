@@ -131,11 +131,18 @@ public class UtilityCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
+        if (playerType == null) {
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_valid_item_in_hand"));
+            return null;
+        }
+
         AudioData data = AudioData.of(itemInHand);
         if (data == null) {
             context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio"));
             return null;
         }
+
         UUID actualSoundId = data.getActualSoundId();
         if (actualSoundId == null) {
             context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio_id"));
