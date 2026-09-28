@@ -62,12 +62,6 @@ public class ApplyCommands {
         ServerPlayer player = context.getSource().getPlayerOrException();
         ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
-        if (playerType == null) {
-            context.getSource().sendFailure(Lang.translatable("audioplayer.no_valid_item_in_hand"));
-            return;
-        }
-
         AudioData data = AudioData.of(itemInHand);
         if (data == null) {
             context.getSource().sendFailure(Lang.translatable("audioplayer.item_no_audio"));
@@ -81,6 +75,12 @@ public class ApplyCommands {
         }
 
         Float rangeOverride = module.get().getRange();
+        PlayerType playerType = PlayerType.fromItemStack(itemInHand);
+        if (rangeOverride == null && playerType == null) { // if explicit range AND player type don't exist then do failure
+            context.getSource().sendFailure(Lang.translatable("audioplayer.no_valid_item_in_hand"));
+            return;
+        }
+
         float currentRange = rangeOverride != null
             ? rangeOverride
             : playerType.getDefaultRange().get();
